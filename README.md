@@ -1,72 +1,53 @@
-# Spring security part 2
 
-- Configure DB authentication instead of In memory authentication
-- Add Role entity, Dao and Service layer for it.
-    ```java
-      public interface RoleService {
-          Role add(Role role);
-      
-          Role getByName(String roleName);
-      }
-    ```
+# CINEMA APP
 
-- Configure role access to specific resources for `ADMIN` and for `USER`.
-  You should configure access to __all endpoints__ in your application. Example:
-```
-POST: /register - all
-GET: /cinema-halls - user/admin
-POST: /cinema-halls - admin
-GET: /movies - user/admin
-POST: /movies - admin
-GET: /movie-sessions/available - user/admin
-POST: /movie-sessions - admin
-PUT: /movie-sessions/{id} - admin
-DELETE: /movie-sessions/{id} - admin
-GET: /orders - user
-POST: /orders/complete - user
-PUT: /shopping-carts/movie-sessions - user
-GET: /shopping-carts/by-user - user
-GET: /users/by-email - admin
-...
-``` 
+### Project description
 
-HINT:
-- Let's store role names as enums and add enum `RoleName` inside `Role` class.
-- Roles and first Admin user can be injected inside DataInitializer class using annotation @PostConstruct.
-```java
-@PostConstruct
-public void inject() {
-    Role adminRole = new Role();
-    adminRole.setRoleName(Role.RoleName.ADMIN);
-    roleService.add(adminRole);
-    Role userRole = new Role();
-    userRole.setRoleName(Role.RoleName.USER);
-    roleService.add(userRole);
-    User user = new User();
-    user.setEmail("admin@i.ua");
-    user.setPassword("admin123");
-    user.setRoles(Set.of(adminRole));
-    userService.add(user);
-}
-```
-- You can specify the different HTTP method access for the same endpoint. For example:
+This project was created for people who need help in managing their cinema business.
+It keeps all the information about cinema halls, movies, movie sessions and customers, who buying tickets.
 
-```plainjava
-        protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers(HttpMethod.POST,"/movies/**").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET,"/movies/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .permitAll()
-                .and()
-                .httpBasic()
-                .and()
-                .csrf().disable();
-    }
-```
+### Features
 
-__You can check yourself using this__ [checklist](https://mate-academy.github.io/jv-program-common-mistakes/java-spring/security-part-2/jv-spring-security-checklist)
+- customer registration;
+- customer authentication;
+- roles for personal and customers (different permissions)
+- created, update and remove movies;
+- created, update and remove movie sessions;
+- created, update and remove customers;
+- display list of all movies;
+- display list of all orders;
+- display list of all cinema halls;
+- give all info about orders by user;
+- give all info about active movie sessions on requirement date;
+- register your user and save their mails for further advertising companies.
 
+### Project structure
+
+- DAO - data access layer;
+- Service - application logic layer;
+- Controllers - presentation layer;
+- Security - security level.
+
+### Technologies
+
+- Java 11
+- Git
+- Apache Maven
+- Apache TomCat
+- MySQL
+- Javax Servlet
+- Spring Framework
+- Hibernate
+
+### Installation
+
+(You need MySQL, TomCat v.9.0.54)
+
+- Clone the project from GitHub;
+- Open file src/main/resources/db.properties and fill form with your configuration parameters;
+After that hibernate build storage in your mentioned place.
+- In src/main/java/cinema/config/DataInitializer.java we set test user with administrating permissions. 
+Recommend to change it with your own.
+- Set connection with DB by editing ConnectionUtil;
+- Set TomCat;
+- Run TomCat and enter your email and password.
